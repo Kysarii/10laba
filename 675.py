@@ -11,7 +11,6 @@ class TicTacToe:
         self.current_player = 'X'
         self.game_over = False
         self.buttons = [[None for _ in range(3)] for _ in range(3)]
-
         self.create_board()
 
     def center_window(self, width, height):
@@ -55,16 +54,16 @@ class TicTacToe:
         else:
             self.current_player = 'O' if self.current_player == 'X' else 'X'
             if self.current_player == 'O':
-                self.bot_move()
+                self.computer_move()
 
-    def bot_move(self):
+    def computer_move(self):
         available_moves = [(row, col) for row in range(3) for col in range(3) if self.board[row][col] == '']
         best_score = float('-inf')
         best_move = None
 
         for row, col in available_moves:
             self.board[row][col] = 'O'
-            score = self.minimax(self.board, False)
+            score = self.best_move(self.board, False)
             self.board[row][col] = ''
             if score > best_score:
                 best_score = score
@@ -89,7 +88,7 @@ class TicTacToe:
     def draw(self):
         return all(self.board[row][col] != '' for row in range(3) for col in range(3))
 
-    def minimax(self, board, is_maximizing_player):
+    def best_move(self, board, is_player_move):
         if self.win('O'):
             return 1
         elif self.win('X'):
@@ -99,11 +98,11 @@ class TicTacToe:
 
         available_moves = [(row, col) for row in range(3) for col in range(3) if board[row][col] == '']
 
-        if is_maximizing_player:
+        if is_player_move:
             best_score = float('-inf')
             for row, col in available_moves:
                 board[row][col] = 'O'
-                score = self.minimax(board, False)
+                score = self.best_move(board, False)
                 board[row][col] = ''
                 best_score = max(score, best_score)
             return best_score
@@ -111,7 +110,7 @@ class TicTacToe:
             best_score = float('inf')
             for row, col in available_moves:
                 board[row][col] = 'X'
-                score = self.minimax(board, True)
+                score = self.best_move(board, True)
                 board[row][col] = ''
                 best_score = min(score, best_score)
             return best_score
@@ -121,9 +120,9 @@ class TicTacToe:
             messagebox.showinfo("Результат", "Ничья!")
         else:
             messagebox.showinfo("Результат", f"Победил {winner}!")
-        self.reset_game()
+        self.restart()
 
-    def reset_game(self):
+    def restart(self):
         self.board = [['' for _ in range(3)] for _ in range(3)]
         self.current_player = 'X'
         self.game_over = False
